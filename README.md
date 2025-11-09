@@ -22,7 +22,7 @@
 
 ## st1设置
 
-> ![img](https://lcnzjeepu6jh.feishu.cn/space/api/box/stream/download/asynccode/?code=ZTkwMTc5ZDY0YTM5OGQ2MzFjOTFhNzYyMTk0ODViNjFfNVpvMUl5S29MSDMxZUVaMVd1NEhBQjlLNzM0MW0yT2RfVG9rZW46Q1F1OWI1QkE0b29KU2F4TkE5emNpSmRtbnZiXzE3NjI2OTc1NjM6MTc2MjcwMTE2M19WNA)
+> 
 
 ## st2设置
 
