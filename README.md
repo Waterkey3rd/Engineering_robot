@@ -1,2 +1,104 @@
 # 追梦杯哈基米被录队电控代码
 
+# 硬件信息
+
+> 主要硬件列表：
+>
+> 2* stm32f103c8t6
+>
+> 1*hc-05蓝牙模块
+>
+> 2*l298n驱动板
+>
+> 4*JGB37直流无刷电机
+>
+> 2*mg90s舵机
+>
+> 6*sg90舵机
+>
+> 以后底盘单片机简称st1，机械臂单片机简称st2
+
+# 单片机设置
+
+## st1设置
+
+> ![img](https://lcnzjeepu6jh.feishu.cn/space/api/box/stream/download/asynccode/?code=ZTkwMTc5ZDY0YTM5OGQ2MzFjOTFhNzYyMTk0ODViNjFfNVpvMUl5S29MSDMxZUVaMVd1NEhBQjlLNzM0MW0yT2RfVG9rZW46Q1F1OWI1QkE0b29KU2F4TkE5emNpSmRtbnZiXzE3NjI2OTc1NjM6MTc2MjcwMTE2M19WNA)
+
+## st2设置
+
+> 
+
+# 代码架构
+
+## 通信协议
+
+### 手机-单片机通信协议
+
+*手机-**单片机**通信协议采用单向传输模式，手机端使用蓝牙调试器应用发送数据，单片机使用hc-05模块接收数据*
+
+手机端
+
+发送的数据包结构如下：
+
+> 包头（0xA5）[8bit]
+>
+> build_start_button(用来指示构造是否开始) [1bit]
+>
+> catch_button（抓取装置收集收紧）[1bit]
+>
+> arm_unflod_button(机械臂的展开与收拢)[1bit]
+>
+> arm_storage_button(机械臂切换到暂存状态)[1bit]
+>
+> 填充位[4bit]
+>
+> chassis_x(控制底盘的x速度，及左右速度)[8bit]
+>
+> chassis_y(控制底盘的y速度，及前后速度)[8bit]
+>
+> PTZ_x()[8bit]
+>
+> PTZ_y(控制机械臂的平移)[8bit]
+>
+> 校验和（原数据所有字节之和的低8位）[8bit]
+>
+> 包尾（0x5A）[8bit]
+
+st1端
+
+*波特率：115200 word_length: 8**bits* *stop_bit: 1* 
+
+采用dma接收数据，进行协议解析，然后根据数据修改相应的状态和变量
+
+### 树莓派-单片机通信协议
+
+发送的数据包结构如下：
+
+> 包头（0xA5）[8bit]
+>
+> 底部舵机的pwm占空比[8bit]
+>
+> 头部舵机的pwm占空比[8bit]
+>
+> 校验和（原数据所有字节之和的低8位）[8bit]
+>
+> 包尾（0x5A）[8bit]
+
+### 底盘单片机-机械臂单片机通信协议
+
+## 底盘麦轮运动驱动
+
+实现功能：
+
+> 1. 前进平动
+> 2. 后退平动
+> 3. 左平移
+> 4. 右平移
+> 5. 顺时针旋转
+> 6. 逆时针旋转
+
+## 机械臂驱动
+
+## 云台驱动
+
+## 树莓派上的云台pwm波解析
