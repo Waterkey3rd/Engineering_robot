@@ -19,13 +19,16 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dma.h"
+#include "stm32f1xx_hal.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "chassis.h"
+#include "communication.h"
+#include <sys/types.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,7 +60,17 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void robot_init(){
+  chassis_init();
+  communication_init();
+}
+void robot_run()
+{
+  parse_hc05_protocol_data(uart_receivemessage,PACKET_LENGTH);
+  send_mcn_data(uart_receivemessage,PACKET_LENGTH);
+  comm_change_chassis();
+  HAL_Delay(DELAY_TIME);
+}
 /* USER CODE END 0 */
 
 /**
@@ -95,7 +108,8 @@ int main(void)
   MX_USART3_UART_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-
+  robot_init();
+  communication_start();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -103,7 +117,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+    robot_run();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
