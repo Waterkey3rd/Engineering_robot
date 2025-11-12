@@ -26,8 +26,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "chassis.h"
-#include "communication.h"
+#include "chassis.h"          // Chassis control functions
+#include "communication.h"    // Communication protocol functions
 #include <sys/types.h>
 /* USER CODE END Includes */
 
@@ -60,17 +60,30 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+/**
+ * @brief Initialize the robot system
+ * 
+ * Calls initialization functions for chassis and communication subsystems
+ */
 void robot_init(){
-  chassis_init();
-  communication_init();
+  chassis_init();         // Initialize chassis motor control
+  communication_init();   // Initialize communication system
 }
+
+/**
+ * @brief Main robot operation loop
+ * 
+ * Processes communication data, updates chassis state, and performs movement
+ * Executes once per control cycle with a delay between cycles
+ */
 void robot_run()
 {
-  parse_hc05_protocol_data(uart_receivemessage,PACKET_LENGTH);
-  send_mcn_data(uart_receivemessage,PACKET_LENGTH);
-  comm_change_chassis();
-  chassis_motion();
-  HAL_Delay(DELAY_TIME);
+  parse_hc05_protocol_data(uart_receivemessage,PACKET_LENGTH);  // Parse incoming HC-05 protocol data
+  send_mcn_data(uart_receivemessage,PACKET_LENGTH);            // Send data to microcontroller
+  comm_change_chassis();                                       // Process communication data to control chassis
+  chassis_motion();                                            // Execute chassis movement based on current state
+  HAL_Delay(DELAY_TIME);                                       // Delay between control cycles
 }
 /* USER CODE END 0 */
 
@@ -102,15 +115,15 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_DMA_Init();
-  MX_TIM4_Init();
-  MX_USART2_UART_Init();
-  MX_USART3_UART_Init();
-  MX_TIM3_Init();
+  MX_GPIO_Init();              // Initialize GPIO pins
+  MX_DMA_Init();               // Initialize DMA controller
+  MX_TIM4_Init();              // Initialize Timer 4 (for motor control)
+  MX_USART2_UART_Init();       // Initialize USART2 (for communication)
+  MX_USART3_UART_Init();       // Initialize USART3 (for HC-05 Bluetooth)
+  MX_TIM3_Init();              // Initialize Timer 3 (for motor control)
   /* USER CODE BEGIN 2 */
-  robot_init();
-  communication_start();
+  robot_init();                // Initialize robot subsystems
+  communication_start();       // Start communication system (begin receiving)
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -118,7 +131,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    robot_run();
+    robot_run();               // Execute main robot operation loop
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -136,13 +149,13 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;    // Use High Speed External oscillator
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;                      // Enable HSE
+  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;       // No predivider for HSE
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;                      // Enable HSI as backup
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;                  // Enable PLL
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;          // Use HSE as PLL source
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;                  // Multiply by 9 (8MHz * 9 = 72MHz)
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -152,10 +165,10 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;     // Use PLL as system clock
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;            // AHB clock = SYSCLK
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;             // APB1 clock = HCLK/2
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;             // APB2 clock = HCLK/1
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
@@ -181,6 +194,7 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
+
 #ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
