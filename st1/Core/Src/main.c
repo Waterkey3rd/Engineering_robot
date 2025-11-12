@@ -69,6 +69,7 @@ void robot_run()
   parse_hc05_protocol_data(uart_receivemessage,PACKET_LENGTH);
   send_mcn_data(uart_receivemessage,PACKET_LENGTH);
   comm_change_chassis();
+  chassis_motion();
   HAL_Delay(DELAY_TIME);
 }
 /* USER CODE END 0 */
