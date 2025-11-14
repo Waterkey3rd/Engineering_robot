@@ -30,8 +30,8 @@
 #define MAX_SPEED 99
 #define MIN_SPEED 0
 #define STOPPING_COUNT_NUM 4
-#define ROTATE_MODE_ON 1
-#define ROTATE_MODE_OFF 0
+#define ROTATE_MODE_ON (uint8_t)1
+#define ROTATE_MODE_OFF (uint8_t)0
 
 typedef enum {//ChassisMotionState
     CHASSIS_STATE_STOPPED,

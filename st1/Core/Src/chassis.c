@@ -29,7 +29,7 @@ void chassis_change_state(ChassisMotionState targetstate,uint8_t target_v)
 {
     if(targetstate!=chassis_current_state)
     {
-        if(chassis_current_state!=CHASSIS_STATE_STOPPING)
+        if(chassis_current_state!=CHASSIS_STATE_STOPPING&&chassis_current_state!=CHASSIS_STATE_STOPPED)
         {
             chassis_stopping_count=STOPPING_COUNT_NUM;
             chassis_current_state=CHASSIS_STATE_STOPPING;
@@ -45,14 +45,22 @@ void chassis_change_state(ChassisMotionState targetstate,uint8_t target_v)
             else
             {
                 chassis_current_state=targetstate;
+                chassis_target_v=target_v;
                 chassis_a=1;
             }
+        }
+        else
+        {
+            chassis_current_state=targetstate;
+            chassis_target_v=target_v;
+            chassis_velocity=0;
+            chassis_a=1;            
         }
     }
     else 
     {
         if(chassis_a+chassis_velocity<=chassis_target_v&&chassis_current_state!=CHASSIS_STATE_STOPPED)
-            chassis_velocity+=chassis_a;    
+            chassis_velocity=chassis_velocity+chassis_a;    
     }
 }
 

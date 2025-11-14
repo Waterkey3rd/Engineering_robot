@@ -1,8 +1,8 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
+
 #include "usart.h"
-#include "dma.h"
 #include <stdint.h>
 #include <sys/types.h>
 
@@ -12,26 +12,25 @@ typedef enum{
     COMM_RECEIVING,
     COMM_COMPLETE
 }Uart_State;
-
 typedef struct {
-    uint8_t build_start_button :1 ;  // 1bit - 构造是否开始
-    uint8_t catch_button : 1;        // 1bit - 抓取装置收集收紧
-    uint8_t arm_unflod_button : 1;   // 1bit - 机械臂的展开与收拢
-    uint8_t arm_storage_button : 1;  // 1bit - 机械臂切换到存储状态
-    uint8_t rotate_mode : 1;         // 1bit - 标识是否进入旋转模式
-    uint8_t reserved : 3;            // 3bit - 填充位
-    signed char chassis_x :8;            //   
-    signed char chassis_y :8;            //
-    signed char PTZ_x :8;                //
-    signed char PTZ_y :8;                //
+    uint8_t build_start_button  ;  // 1bit - 构造是否开始
+    uint8_t catch_button ;        // 1bit - 抓取装置收集收紧
+    uint8_t arm_unflod_button ;   // 1bit - 机械臂的展开与收拢
+    uint8_t arm_storage_button ;  // 1bit - 机械臂切换到存储状态
+    uint8_t rotate_mode ;         // 1bit - 标识是否进入旋转模式
+    uint8_t reserved ;            // 3bit - 填充位
+    signed char chassis_x ;            //   
+    signed char chassis_y ;            //
+    signed char PTZ_x ;                //
+    signed char PTZ_y ;                //
 } __attribute__((packed)) ProtocolPacket;
 
 #define HC05_HUART huart3
 #define MUC_HUART  huart2
 #define DELAY_TIME 20
 #define PACKET_LENGTH 8
-#define HC05_MESSAGE_SIZE PACKET_LENGTH*sizeof(uint8_t)
-#define MUC_MESSAGE_SIZE PACKET_LENGTH*sizeof(uint8_t)
+#define HC05_MESSAGE_SIZE PACKET_LENGTH*sizeof(signed char)
+#define MUC_MESSAGE_SIZE (PACKET_LENGTH)*sizeof(signed char)
 
 extern signed char uart_receivemessage[PACKET_LENGTH];
 extern char uart_transmitmessage[PACKET_LENGTH];

@@ -111,6 +111,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   robot_init();
   communication_start();
+  HAL_Delay(500);
   /* USER CODE END 2 */
 
   /* Infinite loop */

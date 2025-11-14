@@ -54,35 +54,40 @@ void parse_hc05_protocol_data(signed char* message,uint16_t message_l)
     {
       if(muc_state==COMM_BLOCKED)
       {
+        //HAL_UART_Transmit_DMA(&MUC_HUART, (uint8_t*)&chassis_target_v, sizeof(uint8_t));
         HAL_UART_Transmit_DMA(&MUC_HUART, (uint8_t*)message, MUC_MESSAGE_SIZE);
         muc_state=COMM_SENDING;
-      }
-      hc05_state=COMM_BLOCKED;
+        hc05_state=COMM_BLOCKED;
+      } 
+    }
+    else{
+      hc05_state=COMM_RECEIVING;
+      HAL_UART_Receive_DMA(&HC05_HUART, (uint8_t*)message, HC05_MESSAGE_SIZE);
     }
   }
 }
 
 void comm_change_chassis()
 {
-  if(hc05_packet.rotate_mode==ROTATE_MODE_ON)
+  if((uint8_t)(hc05_packet.rotate_mode)==ROTATE_MODE_ON)
     {
-      if(hc05_packet.chassis_x==0)
+      if(hc05_packet.chassis_y==0)
       {
         // chassis_target_v=0;
         // chassis_current_state=CHASSIS_STATE_STOPPED;
         chassis_change_state(CHASSIS_STATE_STOPPED, 0);
       }
-      else if(hc05_packet.chassis_x>0)
+      else if(hc05_packet.chassis_y>0)
       {
         // chassis_target_v=MAX_SPEED<hc05_packet.chassis_x?MAX_SPEED:hc05_packet.chassis_x;
         // chassis_current_state=CHASSIS_STATE_ROTATE_CW;
-        chassis_change_state(CHASSIS_STATE_ROTATE_CW, MAX_SPEED<hc05_packet.chassis_x?MAX_SPEED:hc05_packet.chassis_x);
+        chassis_change_state(CHASSIS_STATE_ROTATE_CW, MAX_SPEED<hc05_packet.chassis_y?MAX_SPEED:hc05_packet.chassis_y);
       }
       else 
       {
         // chassis_target_v=MAX_SPEED<(-hc05_packet.chassis_x)?MAX_SPEED:(-hc05_packet.chassis_x);
         // chassis_current_state=CHASSIS_STATE_ROTATE_CCW;  
-        chassis_change_state(CHASSIS_STATE_ROTATE_CCW, MAX_SPEED<(-hc05_packet.chassis_x)?MAX_SPEED:(-hc05_packet.chassis_x));     
+        chassis_change_state(CHASSIS_STATE_ROTATE_CCW, MAX_SPEED<(-hc05_packet.chassis_y)?MAX_SPEED:(-hc05_packet.chassis_y));     
       }
     }
   else
@@ -150,19 +155,22 @@ uint8_t read_message(signed char* message,uint16_t message_l)
     checksum = 0;
     for(uint8_t i=1;i<message_l-2;i++)
       checksum+=message[i];
-    if(checksum==message[message_l-2])//协议校验无误
+    if(checksum==(uint8_t)message[message_l-2])//协议校验无误
     {
-      hc05_packet.build_start_button=(message[1]>>0) & 0x01;
-      hc05_packet.catch_button=(message[1]>>1) & 0x01;
-      hc05_packet.arm_unflod_button=(message[1]>>2) & 0x01;
-      hc05_packet.arm_storage_button=(message[1]>>3) & 0x01;
-      hc05_packet.rotate_mode=(message[1]>>4) & 0x01;
-      hc05_packet.reserved=(message[1]>>5) & 0x07;
+      hc05_packet.build_start_button=((((uint8_t)message[1])>>0) & 0x01);
+      hc05_packet.catch_button=((((uint8_t)message[1])>>1) & 0x01);
+      hc05_packet.arm_unflod_button=((((uint8_t)message[1])>>2) & 0x01);
+      hc05_packet.arm_storage_button=((((uint8_t)message[1])>>3) & 0x01);
+      hc05_packet.rotate_mode=((((uint8_t)message[1])>>4) & 0x01);
+      hc05_packet.reserved=((uint8_t)(message[1]>>5) & 0x07);
       hc05_packet.chassis_x=message[2];
       hc05_packet.chassis_y=message[3];
       hc05_packet.PTZ_x=message[4];
       hc05_packet.PTZ_y=message[5];
       return 1;
+    }
+    else {
+      HAL_UART_Receive_DMA(&HC05_HUART, (uint8_t*)message, HC05_MESSAGE_SIZE);
     }
   }
   return 0;
