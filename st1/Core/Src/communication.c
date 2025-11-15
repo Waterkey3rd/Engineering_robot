@@ -28,16 +28,10 @@ void communication_init()
 
 void protocolpacket_init()
 {
-  hc05_packet.build_start_button=0;
-  hc05_packet.catch_button=0;
-  hc05_packet.arm_unflod_button=0;
-  hc05_packet.arm_storage_button=0;
   hc05_packet.rotate_mode=0;
   hc05_packet.reserved=0;
   hc05_packet.chassis_x=0;
   hc05_packet.chassis_y=0;
-  hc05_packet.PTZ_x=0;
-  hc05_packet.PTZ_y=0;
 }
 
 void communication_start()
@@ -157,16 +151,10 @@ uint8_t read_message(signed char* message,uint16_t message_l)
       checksum+=message[i];
     if(checksum==(uint8_t)message[message_l-2])//协议校验无误
     {
-      hc05_packet.build_start_button=((((uint8_t)message[1])>>0) & 0x01);
-      hc05_packet.catch_button=((((uint8_t)message[1])>>1) & 0x01);
-      hc05_packet.arm_unflod_button=((((uint8_t)message[1])>>2) & 0x01);
-      hc05_packet.arm_storage_button=((((uint8_t)message[1])>>3) & 0x01);
       hc05_packet.rotate_mode=((((uint8_t)message[1])>>4) & 0x01);
       hc05_packet.reserved=((uint8_t)(message[1]>>5) & 0x07);
       hc05_packet.chassis_x=message[2];
       hc05_packet.chassis_y=message[3];
-      hc05_packet.PTZ_x=message[4];
-      hc05_packet.PTZ_y=message[5];
       return 1;
     }
     else {

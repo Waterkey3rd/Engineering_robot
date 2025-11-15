@@ -13,16 +13,10 @@ typedef enum{
     COMM_COMPLETE
 }Uart_State;
 typedef struct {
-    uint8_t build_start_button  ;  // 1bit - 构造是否开始
-    uint8_t catch_button ;        // 1bit - 抓取装置收集收紧
-    uint8_t arm_unflod_button ;   // 1bit - 机械臂的展开与收拢
-    uint8_t arm_storage_button ;  // 1bit - 机械臂切换到存储状态
     uint8_t rotate_mode ;         // 1bit - 标识是否进入旋转模式
     uint8_t reserved ;            // 3bit - 填充位
     signed char chassis_x ;            //   
-    signed char chassis_y ;            //
-    signed char PTZ_x ;                //
-    signed char PTZ_y ;                //
+    signed char chassis_y ;            //               //
 } __attribute__((packed)) ProtocolPacket;
 
 #define HC05_HUART huart3
