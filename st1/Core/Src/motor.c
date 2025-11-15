@@ -1,11 +1,13 @@
 #include "motor.h"
+#include "stm32f1xx_hal_tim.h"
 #include <stdint.h>
+#include "tim.h"
 
 void motor_init(TIM_HandleTypeDef *htim_in1,uint32_t in1,TIM_HandleTypeDef *htim_in2,uint32_t in2)
 {
     HAL_TIM_PWM_Start(htim_in1,in1);
-    __HAL_TIM_SET_COMPARE(htim_in1, in1, PWM_MAX_SET_NUM);
     HAL_TIM_PWM_Start(htim_in2,in2);
+    __HAL_TIM_SET_COMPARE(htim_in1, in1, PWM_MAX_SET_NUM);
     __HAL_TIM_SET_COMPARE(htim_in2, in2, PWM_MAX_SET_NUM);
 }
 
@@ -14,7 +16,9 @@ void motor_set_state(uint8_t speed,Motor_Sate state,TIM_HandleTypeDef *htim_in1,
     switch (state) {
         case MOTOR_DIR_FORWARD:
             __HAL_TIM_SET_COMPARE(htim_in1, in1, speed);
-            __HAL_TIM_SET_COMPARE(htim_in2, in2, 0);            
+            __HAL_TIM_SET_COMPARE(htim_in2, in2, 0);
+            int a=__HAL_TIM_GET_COMPARE(htim_in1, in1);
+            int b=__HAL_TIM_GET_COMPARE(htim_in2, in2);
             break;
         case MOTOR_DIR_REVERSE:
             __HAL_TIM_SET_COMPARE(htim_in1, in1, 0);
